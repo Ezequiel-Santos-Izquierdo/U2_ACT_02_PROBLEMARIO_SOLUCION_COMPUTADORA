@@ -1,0 +1,76 @@
+import math
+
+print("===================================")
+print("        RESULTADOS CASO 2")
+print("===================================")
+
+# ======================================
+# a) Sensibilidades
+# ======================================
+q = 0.85
+qs = 0.80
+
+# ======================================
+# b) Factores de concentración
+# ======================================
+D = 1.65
+d = 1.10
+r = 0.11
+
+Kt = 1.65
+Kts = 1.45
+
+# ======================================
+# c) Factores por fatiga
+# ======================================
+Kf = 1 + q * (Kt - 1)
+Kfs = 1 + qs * (Kts - 1)
+
+# ======================================
+# d) Esfuerzos
+# ======================================
+Ma = 1260
+Mm = 0
+Ta = 0
+Tm = 1100
+
+sigma_a = (32 * Kf * Ma) / (math.pi * d**3)
+sigma_m = (32 * Kf * Mm) / (math.pi * d**3)
+tau_a = (16 * Kfs * Ta) / (math.pi * d**3)
+tau_m = (16 * Kfs * Tm) / (math.pi * d**3)
+
+# ======================================
+# e) Von Mises
+# ======================================
+sigma_a_v = math.sqrt(sigma_a**2 + 3 * tau_a**2)
+sigma_m_v = math.sqrt(sigma_m**2 + 3 * tau_m**2)
+
+# ======================================
+# f) Esfuerzo máximo
+# ======================================
+sigma_max_v = sigma_m_v + sigma_a_v
+
+# ======================================
+# g) Factor de diseño Von Mises
+# ======================================
+Sy = 82
+n_vm = Sy / sigma_max_v
+
+# ======================================
+# h) Goodman
+# ======================================
+Sut = 105
+Se = 30
+
+n_goodman = 1 / ((sigma_a_v/Se) + (sigma_m_v/Sut))
+
+# RESULTADOS
+print("σa =", sigma_a)
+print("σm =", sigma_m)
+print("τa =", tau_a)
+print("τm =", tau_m)
+print("σa' =", sigma_a_v)
+print("σm' =", sigma_m_v)
+print("σmax' =", sigma_max_v)
+print("n_vm =", n_vm)
+print("n_Goodman =", n_goodman)

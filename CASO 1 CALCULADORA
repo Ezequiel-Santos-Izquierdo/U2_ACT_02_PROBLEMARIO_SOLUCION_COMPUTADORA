@@ -1,0 +1,126 @@
+import math
+
+print("===================================")
+print("   EJEMPLO 7-1  DISEÑO A FATIGA")
+print("===================================")
+
+# ======================================
+# a) Geometría del eje
+# ======================================
+print("\na) Geometría")
+
+D = float(input("Diametro mayor D (in): "))
+d = float(input("Diametro menor d (in): "))
+r = float(input("Radio de entalle r (in): "))
+
+print("\nRelaciones geométricas")
+print("D/d =", D/d)
+print("r/d =", r/d)
+
+# ======================================
+# b) Concentración de esfuerzos
+# ======================================
+print("\nb) Factores de concentración")
+
+Kt = float(input("Kt (flexión): "))
+Kts = float(input("Kts (torsión): "))
+
+# ======================================
+# c) Sensibilidad a la muesca
+# ======================================
+print("\nc) Sensibilidad a la muesca")
+
+q = float(input("q (flexión): "))
+qs = float(input("qs (torsión): "))
+
+Kf = 1 + q*(Kt - 1)
+Kfs = 1 + qs*(Kts - 1)
+
+print("Kf =", Kf)
+print("Kfs =", Kfs)
+
+# ======================================
+# d) Propiedades del material
+# ======================================
+print("\nd) Propiedades del material")
+
+Sut = float(input("Sut (psi): "))
+Sy = float(input("Sy (psi): "))
+
+# Límite de resistencia a fatiga base
+Se_prime = 0.5 * Sut
+print("Se' =", Se_prime)
+
+# ======================================
+# e) Factores de Marin
+# ======================================
+print("\ne) Factores de Marin")
+
+ka = float(input("ka (acabado superficial): "))
+kb = float(input("kb (factor de tamaño): "))
+kc = float(input("kc (tipo de carga): "))
+kd = float(input("kd (temperatura): "))
+ke = float(input("ke (confiabilidad): "))
+
+Se = ka * kb * kc * kd * ke * Se_prime
+
+print("Se =", Se)
+
+# ======================================
+# f) Cargas
+# ======================================
+print("\nf) Cargas")
+
+Ma = float(input("Momento alternante Ma (lbf*in): "))
+Mm = float(input("Momento medio Mm (lbf*in): "))
+
+Ta = float(input("Torque alternante Ta (lbf*in): "))
+Tm = float(input("Torque medio Tm (lbf*in): "))
+
+# ======================================
+# g) Esfuerzos
+# ======================================
+print("\ng) Esfuerzos")
+
+sigma_a = (32 * Kf * Ma) / (math.pi * d**3)
+sigma_m = (32 * Kf * Mm) / (math.pi * d**3)
+
+tau_a = (16 * Kfs * Ta) / (math.pi * d**3)
+tau_m = (16 * Kfs * Tm) / (math.pi * d**3)
+
+print("σa =", sigma_a)
+print("σm =", sigma_m)
+print("τa =", tau_a)
+print("τm =", tau_m)
+
+# ======================================
+# h) Von Mises equivalente
+# ======================================
+print("\nh) Von Mises equivalente")
+
+sigma_a_v = math.sqrt(sigma_a**2 + 3*(tau_a**2))
+sigma_m_v = math.sqrt(sigma_m**2 + 3*(tau_m**2))
+
+print("σa' =", sigma_a_v)
+print("σm' =", sigma_m_v)
+
+# ======================================
+# i) Criterio de Goodman
+# ======================================
+print("\ni) Factor de seguridad Goodman")
+
+n = 1 / ((sigma_a_v/Se) + (sigma_m_v/Sut))
+
+print("Factor de seguridad n =", n)
+
+# ======================================
+# j) Von Mises para fluencia
+# ======================================
+print("\nj) Verificación contra fluencia")
+
+sigma_max = sigma_a_v + sigma_m_v
+
+n_y = Sy / sigma_max
+
+print("σmax =", sigma_max)
+print("Factor de seguridad fluencia =", n_y)

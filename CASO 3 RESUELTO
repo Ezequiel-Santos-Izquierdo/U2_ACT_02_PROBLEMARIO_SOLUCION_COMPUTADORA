@@ -1,0 +1,62 @@
+import math
+
+print("===================================")
+print("        RESULTADOS CASO 3")
+print("===================================")
+
+# ======================================
+# b) Factores dados
+# ======================================
+Kf = 2.2
+Kfs = 1.8
+
+# ======================================
+# d) Esfuerzos
+# ======================================
+d = 10
+
+Ma = 70
+Mm = 55
+Ta = 45
+Tm = 35
+
+sigma_a = (32 * Kf * Ma) / (math.pi * d**3)
+sigma_m = (32 * Kf * Mm) / (math.pi * d**3)
+tau_a = (16 * Kfs * Ta) / (math.pi * d**3)
+tau_m = (16 * Kfs * Tm) / (math.pi * d**3)
+
+# ======================================
+# e) Von Mises
+# ======================================
+sigma_a_v = math.sqrt(sigma_a**2 + 3 * tau_a**2)
+sigma_m_v = math.sqrt(sigma_m**2 + 3 * tau_m**2)
+
+# ======================================
+# f) Esfuerzo máximo
+# ======================================
+sigma_max_v = sigma_m_v + sigma_a_v
+
+# ======================================
+# g) Factor de diseño Von Mises
+# ======================================
+Sy = 560
+n_vm = Sy / sigma_max_v
+
+# ======================================
+# h) Gerber
+# ======================================
+Sut = 700
+Se = 210
+
+n_gerber = 1 / ((sigma_a_v/Se) + (sigma_m_v/Sut)**2)
+
+# RESULTADOS
+print("σa =", sigma_a)
+print("σm =", sigma_m)
+print("τa =", tau_a)
+print("τm =", tau_m)
+print("σa' =", sigma_a_v)
+print("σm' =", sigma_m_v)
+print("σmax' =", sigma_max_v)
+print("n_vm =", n_vm)
+print("n_Gerber =", n_gerber)

@@ -1,0 +1,182 @@
+import math
+
+print("================================================")
+print("   CALCULADORA GENERAL – EJES")
+print("================================================")
+print("Deja vacío y presiona ENTER si no deseas ingresar un dato.\n")
+
+def entrada(mensaje):
+    valor = input(mensaje)
+    return float(valor) if valor.strip() != "" else None
+
+
+# ======================================
+# a) Sensibilidades
+# ======================================
+print("\nINCISO A) Sensibilidades")
+q = entrada("q (flexión): ")
+qs = entrada("qs (cortante): ")
+
+if q is not None and qs is not None:
+    print("INCISO A) ✔ RESUELTO")
+else:
+    print("INCISO A) ✖ NO COMPLETO (faltan q o qs)")
+
+
+# ======================================
+# b) Factores de concentración
+# ======================================
+print("\nINCISO B) Factores de concentración")
+
+D = entrada("D (diámetro mayor): ")
+d = entrada("d (diámetro menor): ")
+r = entrada("r (radio de entalle): ")
+Kt = entrada("Kt (flexión): ")
+Kts = entrada("Kts (torsión): ")
+
+if D and d:
+    print("D/d =", D/d)
+if r and d:
+    print("r/d =", r/d)
+
+if Kt is not None and Kts is not None:
+    print("INCISO B) ✔ RESUELTO")
+else:
+    print("INCISO B) ✖ NO COMPLETO (faltan Kt o Kts)")
+
+
+# ======================================
+# c) Factores de concentración por fatiga
+# ======================================
+print("\nINCISO C) Factores de concentración por fatiga")
+
+Kf = None
+Kfs = None
+
+Kf_directo = entrada("Kf directo (si ya lo tienes): ")
+Kfs_directo = entrada("Kfs directo (si ya lo tienes): ")
+
+if Kf_directo:
+    Kf = Kf_directo
+elif q is not None and Kt is not None:
+    Kf = 1 + q * (Kt - 1)
+
+if Kfs_directo:
+    Kfs = Kfs_directo
+elif qs is not None and Kts is not None:
+    Kfs = 1 + qs * (Kts - 1)
+
+if Kf and Kfs:
+    print("Kf =", Kf)
+    print("Kfs =", Kfs)
+    print("INCISO C) ✔ RESUELTO")
+else:
+    print("INCISO C) ✖ NO RESUELTO (faltan datos del inciso A o B)")
+
+
+# ======================================
+# d) Esfuerzos
+# ======================================
+print("\nINCISO D) Esfuerzos")
+
+Ma = entrada("Momento alternante Ma: ")
+Mm = entrada("Momento medio Mm: ")
+Ta = entrada("Torque alternante Ta: ")
+Tm = entrada("Torque medio Tm: ")
+
+sigma_a = sigma_m = tau_a = tau_m = None
+
+if d and Kf and Ma is not None:
+    sigma_a = (32 * Kf * Ma) / (math.pi * d**3)
+
+if d and Kf and Mm is not None:
+    sigma_m = (32 * Kf * Mm) / (math.pi * d**3)
+
+if d and Kfs and Ta is not None:
+    tau_a = (16 * Kfs * Ta) / (math.pi * d**3)
+
+if d and Kfs and Tm is not None:
+    tau_m = (16 * Kfs * Tm) / (math.pi * d**3)
+
+if sigma_a is not None: print("σa =", sigma_a)
+if sigma_m is not None: print("σm =", sigma_m)
+if tau_a is not None: print("τa =", tau_a)
+if tau_m is not None: print("τm =", tau_m)
+
+if sigma_a or sigma_m or tau_a or tau_m:
+    print("INCISO D) ✔ PARCIAL O TOTALMENTE RESUELTO")
+else:
+    print("INCISO D) ✖ NO RESUELTO (faltan d, Kf/Kfs o cargas)")
+
+
+# ======================================
+# e) Von Mises
+# ======================================
+print("\nINCISO E) Von Mises")
+
+sigma_a_v = sigma_m_v = None
+
+if sigma_a is not None and tau_a is not None:
+    sigma_a_v = math.sqrt(sigma_a**2 + 3*tau_a**2)
+
+if sigma_m is not None and tau_m is not None:
+    sigma_m_v = math.sqrt(sigma_m**2 + 3*tau_m**2)
+
+if sigma_a_v is not None: print("σa' =", sigma_a_v)
+if sigma_m_v is not None: print("σm' =", sigma_m_v)
+
+if sigma_a_v or sigma_m_v:
+    print("INCISO E) ✔ PARCIAL O TOTALMENTE RESUELTO")
+else:
+    print("INCISO E) ✖ NO RESUELTO (faltan esfuerzos del inciso D)")
+
+
+# ======================================
+# f) Esfuerzo máximo
+# ======================================
+print("\nINCISO F) Esfuerzo máximo Von Mises")
+
+sigma_max_v = None
+if sigma_a_v and sigma_m_v:
+    sigma_max_v = sigma_m_v + sigma_a_v
+    print("σmax' =", sigma_max_v)
+    print("INCISO F) ✔ RESUELTO")
+else:
+    print("INCISO F) ✖ NO RESUELTO (faltan σa' o σm')")
+
+
+# ======================================
+# g) Factor de diseño Von Mises
+# ======================================
+print("\nINCISO G) Factor de diseño Von Mises")
+
+Sy = entrada("Sy: ")
+
+if Sy and sigma_max_v:
+    n_vm = Sy / sigma_max_v
+    print("n_vm =", n_vm)
+    print("INCISO G) ✔ RESUELTO")
+else:
+    print("INCISO G) ✖ NO RESUELTO (falta Sy o σmax')")
+
+
+# ======================================
+# h) Criterios de fatiga
+# ======================================
+print("\nINCISO H) Criterios de fatiga")
+
+Sut = entrada("Sut: ")
+Se = entrada("Se: ")
+
+if sigma_a_v and sigma_m_v and Se and Sut:
+    n_goodman = 1 / ((sigma_a_v/Se) + (sigma_m_v/Sut))
+    n_gerber = 1 / ((sigma_a_v/Se) + (sigma_m_v/Sut)**2)
+    print("n_Goodman =", n_goodman)
+    print("n_Gerber =", n_gerber)
+    print("INCISO H) ✔ RESUELTO")
+else:
+    print("INCISO H) ✖ NO RESUELTO (faltan σa', σm', Se o Sut)")
+
+print("\n================================================")
+print("              FIN DEL PROGRAMA")
+print("================================================")

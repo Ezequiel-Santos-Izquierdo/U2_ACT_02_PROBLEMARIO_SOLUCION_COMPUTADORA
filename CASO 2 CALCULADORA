@@ -1,0 +1,96 @@
+import math
+
+print("===================================")
+print("   CALCULADORA CASO 2")
+print("===================================")
+
+# ======================================
+# a) Sensibilidades a la muesca
+# ======================================
+print("\na) Sensibilidades")
+q = float(input("q (flexión): "))
+qs = float(input("qs (cortante): "))
+
+# ======================================
+# b) Factores de concentración
+# ======================================
+print("\nb) Factores de concentración")
+
+D = float(input("D (diámetro mayor): "))
+d = float(input("d (diámetro menor): "))
+r = float(input("r (radio de entalle): "))
+
+print("Relaciones geométricas:")
+print("D/d =", D/d)
+print("r/d =", r/d)
+
+Kt = float(input("Kt (flexión): "))
+Kts = float(input("Kts (torsión): "))
+
+# ======================================
+# c) Factores por fatiga
+# ======================================
+print("\nc) Factores de concentración por fatiga")
+Kf = 1 + q * (Kt - 1)
+Kfs = 1 + qs * (Kts - 1)
+print("Kf =", Kf)
+print("Kfs =", Kfs)
+
+# ======================================
+# d) Esfuerzos
+# ======================================
+print("\nd) Esfuerzos")
+
+Ma = float(input("Momento alternante Ma: "))
+Mm = float(input("Momento medio Mm: "))
+Ta = float(input("Torque alternante Ta: "))
+Tm = float(input("Torque medio Tm: "))
+
+sigma_a = (32 * Kf * Ma) / (math.pi * d**3)
+sigma_m = (32 * Kf * Mm) / (math.pi * d**3)
+tau_a = (16 * Kfs * Ta) / (math.pi * d**3)
+tau_m = (16 * Kfs * Tm) / (math.pi * d**3)
+
+print("σa =", sigma_a)
+print("σm =", sigma_m)
+print("τa =", tau_a)
+print("τm =", tau_m)
+
+# ======================================
+# e) Von Mises alternante y medio
+# ======================================
+print("\ne) Esfuerzos equivalentes de Von Mises")
+
+sigma_a_v = math.sqrt(sigma_a**2 + 3 * tau_a**2)
+sigma_m_v = math.sqrt(sigma_m**2 + 3 * tau_m**2)
+
+print("σa' =", sigma_a_v)
+print("σm' =", sigma_m_v)
+
+# ======================================
+# f) Esfuerzo máximo de Von Mises
+# ======================================
+print("\nf) Esfuerzo máximo de Von Mises")
+
+sigma_max_v = sigma_m_v + sigma_a_v
+print("σmax' =", sigma_max_v)
+
+# ======================================
+# g) Factor de diseño Von Mises
+# ======================================
+print("\ng) Factor de diseño Von Mises")
+
+Sy = float(input("Sy: "))
+n_vm = Sy / sigma_max_v
+print("n_vm =", n_vm)
+
+# ======================================
+# h) Goodman
+# ======================================
+print("\nh) Factor de diseño Goodman")
+
+Sut = float(input("Sut: "))
+Se = float(input("Se: "))
+
+n_goodman = 1 / ((sigma_a_v/Se) + (sigma_m_v/Sut))
+print("n_Goodman =", n_goodman)

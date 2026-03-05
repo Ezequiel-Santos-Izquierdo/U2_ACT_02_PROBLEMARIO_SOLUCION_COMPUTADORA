@@ -1,0 +1,126 @@
+import math
+
+print("===================================")
+print("   EJEMPLO 7-1 RESUELTO")
+print("   DISEÑO A FATIGA DE UN EJE")
+print("===================================")
+
+# ======================================
+# a) Geometría del eje
+# ======================================
+
+D = 1.65
+d = 1.10
+r = 0.11
+
+print("\nRelaciones geométricas")
+print("D/d =", D/d)
+print("r/d =", r/d)
+
+# ======================================
+# b) Factores de concentración
+# ======================================
+
+Kt = 1.68
+Kts = 1.42
+
+# ======================================
+# c) Sensibilidad a la muesca
+# ======================================
+
+q = 0.85
+qs = 0.88
+
+Kf = 1 + q*(Kt - 1)
+Kfs = 1 + qs*(Kts - 1)
+
+print("\nFactores de fatiga")
+print("Kf =", Kf)
+print("Kfs =", Kfs)
+
+# ======================================
+# d) Propiedades del material
+# ======================================
+
+Sut = 105000
+Sy = 82000
+
+Se_prima = 0.5 * Sut
+
+print("\nLímite de fatiga base")
+print("Se' =", Se_prima)
+
+# ======================================
+# e) Factores de Marin
+# ======================================
+
+ka = 0.787
+kb = 0.870
+kc = 1
+kd = 1
+ke = 0.814
+
+Se = ka * kb * kc * kd * ke * Se_prima
+
+print("\nLímite de fatiga corregido")
+print("Se =", Se)
+
+# ======================================
+# f) Cargas
+# ======================================
+
+Ma = 1260
+Mm = 0
+
+Ta = 1100
+Tm = 0
+
+# ======================================
+# g) Esfuerzos
+# ======================================
+
+sigma_a = (32 * Kf * Ma) / (math.pi * d**3)
+sigma_m = (32 * Kf * Mm) / (math.pi * d**3)
+
+tau_a = (16 * Kfs * Ta) / (math.pi * d**3)
+tau_m = (16 * Kfs * Tm) / (math.pi * d**3)
+
+print("\nEsfuerzos")
+print("σa =", sigma_a)
+print("σm =", sigma_m)
+print("τa =", tau_a)
+print("τm =", tau_m)
+
+# ======================================
+# h) Von Mises equivalente
+# ======================================
+
+sigma_a_v = math.sqrt(sigma_a**2 + 3*(tau_a**2))
+sigma_m_v = math.sqrt(sigma_m**2 + 3*(tau_m**2))
+
+print("\nEsfuerzos equivalentes de Von Mises")
+print("σa' =", sigma_a_v)
+print("σm' =", sigma_m_v)
+
+# ======================================
+# i) Goodman
+# ======================================
+
+n = 1 / ((sigma_a_v/Se) + (sigma_m_v/Sut))
+
+print("\nFactor de seguridad Goodman")
+print("n =", n)
+
+# ======================================
+# j) Verificación contra fluencia
+# ======================================
+
+sigma_max = sigma_a_v + sigma_m_v
+
+n_y = Sy / sigma_max
+
+print("\nEsfuerzo máximo de Von Mises")
+print("σmax =", sigma_max)
+
+print("\nFactor de seguridad contra fluencia")
+print("n_y =", n_y)
